@@ -1,14 +1,19 @@
+import React from 'react';
 import './index.scss';
 
 const questions = [
   {
     title: 'The React is ... ?',
-    variants: ['framework', 'application', 'library'],
+    variants: ['Framework',
+               'Application',
+               'Library'],
     correct: 2,
   },
   {
     title: 'The component is ... ',
-    variants: ['application', 'part of an application or page', 'what I don\'t know what is'],
+    variants: ['Application',
+               'Part of an application or page',
+               'What I don\'t know what is'],
     correct: 1,
   },
   {
@@ -20,39 +25,75 @@ const questions = [
     ],
     correct: 2,
   },
+  {
+    title: 'HTML is program language ?',
+    variants: [
+      'Yes',
+      'No',
+    ],
+    correct: 1,
+  },
+  {
+    title: 'What is React Router?',
+    variants: [
+      'Is a collection of navigational components',
+      'This is a function',
+      'This is React Roadmaps',
+    ],
+    correct:0,
+  },
+  
 ];
 
-function Result() {
+function Result({correct}) {
   return (
     <div className="result">
-      <img src="https://cdn-icons-png.flaticon.com/512/2278/2278992.png" />
-      <h2>You guessed 3 answers out of 10</h2>
-      <button>Try again</button>
+      <img src="https://cdn-icons-png.flaticon.com/512/2278/2278992.png" alt='correct'/>
+      <h2>You guessed {correct} answers out of {questions.length}</h2>
+      <button onClick={() => window.location.reload()}>Try again</button>
     </div>
   );
 }
 
-function Game() {
+function Game({step, question, onClickVariant}) {
+  const percent = Math.round((step / questions.length)  * 100);
+
   return (
     <>
       <div className="progress">
-        <div style={{ width: '50%' }} className="progress__inner"></div>
+        <div style={{ width: `${percent}%` }} className="progress__inner"></div>
       </div>
-      <h1>What is useState?</h1>
+      <h1>{question.title}</h1>
       <ul>
-        <li>This is a function to store component data</li>
-        <li>This is a global state</li>
-        <li>This is when no one needs you</li>
+        {
+          question.variants.map((text, index) => 
+          <li onClick={() => onClickVariant(index)} key={text}>{text}</li>)
+        }
       </ul>
     </>
   );
 }
 
 function App() {
+  const [step, setStep] = React.useState(0);
+  const [correct, setCorrect] = React.useState(0)
+  const question =  questions[step]
+
+  const onClickVariant = (index) => {
+    setStep(step + 1);
+    if(index === question.correct){
+      setCorrect(correct + 1)
+    }
+  }
+
   return (
     <div className="App">
-      <Game />
-      {/* <Result /> */}
+      {
+        step !== questions.length ? 
+        (<Game step={step} question={question} onClickVariant={onClickVariant}/> 
+        ) : (
+          <Result correct={correct} />)
+      }
     </div>
   );
 }
